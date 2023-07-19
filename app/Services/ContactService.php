@@ -2,21 +2,98 @@
 
 namespace App\Services;
 
+use App\Exceptions\ValidationError;
+use App\Models\Contact;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
+
 class ContactService
 {
+
+    private $messages = [
+        'email.required' => 'O campo email é obrigatório.',
+        'name.required' => 'O campo nome é obrigatório.',
+        'contact.required' => 'O campo contato é obrigatório.',
+        'email.email' => 'O email fornecido não é válido.',
+    ];
+
+
+    /**
+     * Get all contacts
+     * @return Contact[]|\Illuminate\Database\Eloquent\Collection
+     */
     function getContacts()
     {
+        return Contact::all();
+    }
 
-        $mockContacts = array();
-        for ($i = 0; $i < 10; $i++) {
-            $mockContacts[] = array(
-                'id' => $i,
-                'name' => "Nome contato {$i}",
-                'email' => "email@contato{$i}.com",
-                'contact' => "11 9 0000-000{$i}",
-            );
+    /**
+     * Create Contact
+     * @param array $fields
+     * @return void
+     */
+    public function create(array $fields)
+    {
+
+        $errors = $this->validateCreate($fields);
+
+        if(!empty($errors)){
+            throw new ValidationError('Erro na validação', $errors, '400');
         }
 
-        return $mockContacts;
+        return Contact::create($fields);
+    }
+
+
+    /**
+     * @param array $fields
+     * @return \Illuminate\Contracts\Validation\Validator|null
+     */
+    private function validateCreate(array $fields) {
+        $validator = Validator::make($fields, [
+            'email' => 'required|email',
+            'name' => 'required',
+            'contact' => 'required'
+        ], $this->messages);
+
+        if($validator->fails()){
+            return $validator;
+        }
+
+        return null;
+    }
+
+    /**
+     * @param int $id
+     * @return mixed
+     * @throws \Exception
+     */
+    public function delete(int $id)
+    {
+        $contact = Contact::find($id);
+
+        if(!$id || !$contact){
+            throw new \Exception("Contato não encontrado.", 404);
+        }
+
+        return $contact->delete();
+    }
+
+    public function update(array $fields, $id)
+    {
+
+        $errors = $this->validateCreate($fields);
+
+        if(!empty($errors)){
+            throw new ValidationError('Erro na validação', $errors, '400');
+        }
+
+        $user = Contact::find($id);
+
+        $user->name= $fields['name'];
+        $user->email = $fields['email'];
+        $user->contact = $fields['contact'];
+
+        return $user->save();
     }
 }
