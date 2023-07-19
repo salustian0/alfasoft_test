@@ -14,6 +14,9 @@ class ContactService
         'email.required' => 'O campo email é obrigatório.',
         'name.required' => 'O campo nome é obrigatório.',
         'contact.required' => 'O campo contato é obrigatório.',
+        'contact.numeric' => 'O campo contato precisa ser númérico',
+        'contact.regex' => 'O campo contato precisa ser númérico',
+        'contact.size' => 'O campo contato precisa ter 9 digitos',
         'email.email' => 'O email fornecido não é válido.',
     ];
 
@@ -53,7 +56,7 @@ class ContactService
         $validator = Validator::make($fields, [
             'email' => 'required|email',
             'name' => 'required',
-            'contact' => 'required'
+            'contact' => ['required', 'regex:/^[0-9]+$/','size:9']
         ], $this->messages);
 
         if($validator->fails()){
