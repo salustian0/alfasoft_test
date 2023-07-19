@@ -48,5 +48,7 @@
         setActiveLink();
     }
 </script>
+
+@stack('scripts')
 </body>
 </html>
