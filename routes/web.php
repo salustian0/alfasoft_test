@@ -13,7 +13,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', [\App\Http\Controllers\ContactController::class, 'index']);
+Route::get('/', [\App\Http\Controllers\ContactController::class, 'index'])->name('index');
 Route::get('/new', [\App\Http\Controllers\ContactController::class, 'create']);
-Route::post('/store', [\App\Http\Controllers\ContactController::class, 'store']);
+Route::post('/store', [\App\Http\Controllers\ContactController::class, 'store'])->name('store');
 
+//Não foi possível utilizar o metodo delete
+Route::get('/destroy/{id}', [\App\Http\Controllers\ContactController::class, 'destroy'])->name('delete_contact');
+
+Route::get('/edit/{id}', [\App\Http\Controllers\ContactController::class, 'edit'])->name('edit_contact');
+Route::get('/update/{id}', [\App\Http\Controllers\ContactController::class, 'update'])->name('update_contact');
